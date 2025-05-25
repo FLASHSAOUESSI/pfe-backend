@@ -1,0 +1,21 @@
+<!-- src/main/resources/templates/emails/verification-code.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Code de vérification</title>
+</head>
+<body>
+<div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color: #003366;">Institut National de la Statistique</h2>
+    <p>Bonjour,</p>
+    <p>Voici votre code de vérification pour finaliser votre inscription :</p>
+    <div style="background-color: #f0f0f0; padding: 15px; margin: 20px 0; text-align: center;">
+        <h1 style="color: #003366; margin: 0;" th:text="${code}">123456</h1>
+    </div>
+    <p>Ce code est valable pendant 15 minutes.</p>
+    <p>Si vous n'avez pas demandé ce code, veuillez ignorer cet email.</p>
+    <p>Cordialement,<br>L'équipe INS</p>
+</div>
+</body>
+</html>
