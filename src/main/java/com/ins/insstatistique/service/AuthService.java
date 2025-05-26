@@ -1,31 +1,42 @@
 
 package com.ins.insstatistique.service;
 
-import com.ins.insstatistique.dto.*;
-import com.ins.insstatistique.email.EmailService;
-import com.ins.insstatistique.entity.EmailToken;
-import com.ins.insstatistique.entity.Entreprise;
-import com.ins.insstatistique.entity.Investigateur;
-import com.ins.insstatistique.exception.EmailAlreadyExistsException;
-import com.ins.insstatistique.exception.InvalidVerificationCodeException;
-import com.ins.insstatistique.repository.EntrepriseRepository;
-import com.ins.insstatistique.repository.InvestigateurRepository;
-import com.ins.insstatistique.repository.TokenRepository;
-import com.ins.insstatistique.security.JwtTokenProvider;
-import jakarta.mail.MessagingException;
-import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.coyote.BadRequestException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.ins.insstatistique.dto.ChangePasswordDto;
+import com.ins.insstatistique.dto.JwtResponse;
+import com.ins.insstatistique.dto.LoginDTO;
+import com.ins.insstatistique.dto.RegisterDTO;
+import com.ins.insstatistique.dto.SetPasswordDto;
+import com.ins.insstatistique.dto.VerifyCodeDto;
+import com.ins.insstatistique.dto.VerifyDto;
+import com.ins.insstatistique.email.EmailService;
+import com.ins.insstatistique.entity.EmailToken;
+import com.ins.insstatistique.entity.Entreprise;
+import com.ins.insstatistique.entity.EntrepriseStatus;
+import com.ins.insstatistique.entity.Governorate;
+import com.ins.insstatistique.entity.Role;
+import com.ins.insstatistique.entity.User;
+import com.ins.insstatistique.exception.EmailAlreadyExistsException;
+import com.ins.insstatistique.exception.InvalidVerificationCodeException;
+import com.ins.insstatistique.repository.EntrepriseRepository;
+import com.ins.insstatistique.repository.GovernorateRepository;
+import com.ins.insstatistique.repository.TokenRepository;
+import com.ins.insstatistique.repository.UserRepository;
+import com.ins.insstatistique.security.JwtTokenProvider;
+
+import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -33,12 +44,12 @@ import java.util.UUID;
 public class AuthService {
 
     private final EntrepriseRepository entrepriseRepository;
-    private final InvestigateurRepository investigateurRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
-    private final AuthenticationManager authenticationManager;
-    private final EmailService emailService;
+    private final AuthenticationManager authenticationManager;    private final EmailService emailService;
     private final TokenRepository tokenRepository;
+    private final GovernorateRepository governorateRepository;
 
     // todo: save generated codes in database
     private final Map<String, String> verificationCodes = new HashMap<>();
@@ -51,28 +62,36 @@ public class AuthService {
         String code = generateVerificationCode();
         verificationCodes.put(request.companyEmail(), code);
         this.emailService.sendVerificationCode(request.investigatorEmail(),code);
-    }
-
-    public boolean register(RegisterDTO registerDTO) throws InvalidVerificationCodeException, MessagingException {
+    }    public boolean register(RegisterDTO registerDTO) throws InvalidVerificationCodeException, MessagingException {
         validateVerificationCode(registerDTO.getCompanyEmail(), registerDTO.getVerificationCode());
+
+        // Get governorate if specified
+        Governorate governorate = null;
+        if (registerDTO.getGovernorateId() != null) {
+            governorate = governorateRepository.findById(registerDTO.getGovernorateId())
+                .orElse(null); // If not found, leave it null
+        }
 
         Entreprise entreprise = Entreprise.builder()
                 .name(registerDTO.getCompanyName())
                 .address(registerDTO.getCompanyAddress())
                 .email(registerDTO.getCompanyEmail())
                 .fax(registerDTO.getCompanyFax())
+                .governorate(governorate)
+                .status(EntrepriseStatus.PENDING)
                 .build();
 
-        Investigateur investigateur = Investigateur.builder()
-                .name(registerDTO.getInvestigatorName())
+        User responsable = User.builder()
+                .nom(registerDTO.getInvestigatorName())
                 .email(registerDTO.getInvestigatorEmail())
                 .phone(registerDTO.getInvestigatorPhone())
                 //.password(passwordEncoder.encode(registerDTO.getPassword()))
                 .entreprise(entreprise)
+                .role(Role.RESPONSABLE)
                 .build();
 
         entrepriseRepository.save(entreprise);
-       Investigateur createdUser =  investigateurRepository.save(investigateur);
+       User createdUser =  userRepository.save(responsable);
         EmailToken emailToken = EmailToken.builder()
                 .token(String.valueOf(UUID.randomUUID()))
                 .userId(createdUser.getId())
@@ -83,9 +102,7 @@ public class AuthService {
 
         //String token = tokenProvider.generateToken(investigateur.getEmail());
         return true;
-    }
-
-    public JwtResponse login(LoginDTO loginDTO) {
+    }    public JwtResponse login(LoginDTO loginDTO) {
         System.out.println("login");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -94,9 +111,18 @@ public class AuthService {
                 )
         );
 
-        String token = tokenProvider.generateToken(loginDTO.getEmail());
+        User user = (User) authentication.getPrincipal();
+        String token = tokenProvider.generateToken(authentication);
+        
+        JwtResponse response = new JwtResponse();
+        response.setToken(token);
+        response.setEmail(user.getEmail());
+        response.setRoles(user.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .toList());
+                
         System.out.println(token);
-        return new JwtResponse(token);
+        return response;
     }
 
     private String generateVerificationCode() {
@@ -115,10 +141,10 @@ public class AuthService {
 
         EmailToken token= this.tokenRepository.findByToken(request.token());
         if(token != null) {
-            Investigateur user = investigateurRepository.findById(token.getUserId()).orElse(null);
+            User user = userRepository.findById(token.getUserId()).orElse(null);
             if (user != null) {
                 user.setPassword(passwordEncoder.encode(request.password()));
-                 investigateurRepository.save(user);
+                userRepository.save(user);
             }
             return false;
         }
@@ -126,13 +152,13 @@ public class AuthService {
     }
 
     public Boolean forgetPassword(String email) throws MessagingException, BadRequestException {
-        Investigateur investigateur = investigateurRepository.findByEmail(email).orElseThrow(
+        User responsable = userRepository.findByEmail(email).orElseThrow(
                 ()->   new BadRequestException("email not found")
         );
         String code = generateVerificationCode();
         EmailToken emailToken = EmailToken.builder()
                 .token(code)
-                .userId(investigateur.getId())
+                .userId(responsable.getId())
                 .build();
         this.tokenRepository.save(emailToken);
 
@@ -146,10 +172,10 @@ public class AuthService {
         }
         EmailToken token= this.tokenRepository.findByToken(request.code());
         if(token != null) {
-            Investigateur user = investigateurRepository.findById(token.getUserId()).orElse(null);
+            User user = userRepository.findById(token.getUserId()).orElse(null);
             if (user != null) {
                 user.setPassword(passwordEncoder.encode(request.password()));
-                investigateurRepository.save(user);
+                userRepository.save(user);
                 return true;
             }
             return false;

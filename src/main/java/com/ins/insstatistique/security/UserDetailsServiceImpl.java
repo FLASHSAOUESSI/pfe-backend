@@ -1,12 +1,14 @@
 package com.ins.insstatistique.security;
 
-import com.ins.insstatistique.repository.InvestigateurRepository;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.ins.insstatistique.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 /**
  * UserDetailsServiceImpl is a service that implements the UserDetailsService interface. It is used
@@ -16,7 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final InvestigateurRepository userRepository;
+    private final UserRepository userRepository;
 
     /**
      * Loads the user's details by their email. This method is called by Spring Security during the

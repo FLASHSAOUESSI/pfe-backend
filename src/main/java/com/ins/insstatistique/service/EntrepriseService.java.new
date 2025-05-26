@@ -1,13 +1,11 @@
 package com.ins.insstatistique.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ins.insstatistique.dto.EnterpriseDashboardDto;
-import com.ins.insstatistique.dto.EnterpriseDto;
 import com.ins.insstatistique.dto.EnterpriseStatusUpdateDto;
 import com.ins.insstatistique.entity.Entreprise;
 import com.ins.insstatistique.entity.EntrepriseStatus;
@@ -92,52 +90,5 @@ public class EntrepriseService {
                 .validatedEnterprises(validatedCount)
                 .rejectedEnterprises(rejectedCount)
                 .build();
-    }
-    
-    /**
-     * Convert Entreprise entity to EnterpriseDto
-     */
-    private EnterpriseDto convertToDto(Entreprise entreprise) {
-        return EnterpriseDto.builder()
-                .id(entreprise.getId())
-                .name(entreprise.getName())
-                .address(entreprise.getAddress())
-                .email(entreprise.getEmail())
-                .fax(entreprise.getFax())
-                .status(entreprise.getStatus())
-                .governorateId(entreprise.getGovernorate() != null ? entreprise.getGovernorate().getId() : null)
-                .governorateName(entreprise.getGovernorate() != null ? entreprise.getGovernorate().getName() : null)
-                .responsablesCount(entreprise.getResponsables() != null ? entreprise.getResponsables().size() : 0)
-                .build();
-    }
-    
-    /**
-     * Convert Entreprise entities to EnterpriseDtos
-     */
-    private List<EnterpriseDto> convertToDtoList(List<Entreprise> enterprises) {
-        return enterprises.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-    }
-    
-    /**
-     * Get all enterprises as DTOs
-     */
-    public List<EnterpriseDto> getAllEnterpriseDtos() {
-        return convertToDtoList(getAllEntreprises());
-    }
-    
-    /**
-     * Get enterprises by status as DTOs
-     */
-    public List<EnterpriseDto> getEnterpriseDtosByStatus(EntrepriseStatus status) {
-        return convertToDtoList(getEntreprisesByStatus(status));
-    }
-    
-    /**
-     * Get enterprise by ID as DTO
-     */
-    public EnterpriseDto getEnterpriseDtoById(Long id) {
-        return convertToDto(getEntrepriseById(id));
     }
 }

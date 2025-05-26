@@ -11,6 +11,7 @@ public class RegisterDTO {
     private String companyAddress;
     private String companyEmail;
     private String companyFax;
+    private Long governorateId;
     private String investigatorName;
     private String investigatorPhone;
     private String investigatorEmail;
