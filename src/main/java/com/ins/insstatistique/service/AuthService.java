@@ -104,25 +104,31 @@ public class AuthService {
         return true;
     }    public JwtResponse login(LoginDTO loginDTO) {
         System.out.println("login");
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDTO.getEmail(),
-                        loginDTO.getPassword()
-                )
-        );
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getEmail(),
+                            loginDTO.getPassword()
+                    )
+            );
+            User user = (User) authentication.getPrincipal();
+            String token = tokenProvider.generateToken(authentication);
 
-        User user = (User) authentication.getPrincipal();
-        String token = tokenProvider.generateToken(authentication);
-        
-        JwtResponse response = new JwtResponse();
-        response.setToken(token);
-        response.setEmail(user.getEmail());
-        response.setRoles(user.getAuthorities().stream()
-                .map(authority -> authority.getAuthority())
-                .toList());
-                
-        System.out.println(token);
-        return response;
+            JwtResponse response = new JwtResponse();
+            response.setToken(token);
+            response.setEmail(user.getEmail());
+            response.setRoles(user.getAuthorities().stream()
+                    .map(authority -> authority.getAuthority())
+                    .toList());
+
+            System.out.println(token);
+            return response;
+        }catch (Exception e) {
+            System.out.println("erreur "+ e.getMessage());
+        }
+
+
+        return null;
     }
 
     private String generateVerificationCode() {

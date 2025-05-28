@@ -3,6 +3,7 @@ package com.ins.insstatistique.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.ins.insstatistique.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class EntrepriseService {
 
     private final EntrepriseRepository entrepriseRepository;
     private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     public List<Entreprise> getAllEntreprises() {
         return entrepriseRepository.findAll();
@@ -57,6 +59,10 @@ public class EntrepriseService {
         EntrepriseStatus previousStatus = entreprise.getStatus();
         entreprise.setStatus(status);
         Entreprise savedEntreprise = entrepriseRepository.save(entreprise);
+        entreprise.getResponsables().stream().forEach(responsable ->{
+            responsable.setEnabled(true);
+            userRepository.save(responsable);
+        } );
         
         boolean notificationSent = false;
         // Call notification service if it's injected
