@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EnqueteRepository extends JpaRepository<Enquete, Long> {
 
+    long countByTypeEnquete_Id(Long typeEnqueteId);
+
 }

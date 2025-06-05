@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController // Combines @Controller and @ResponseBody
 @RequestMapping("/api/enquetes") // Base path for enquete-related endpoints
@@ -21,15 +22,22 @@ public class EnqueteController {
             // Return the saved entity and HTTP status 201 (Created)
             return new ResponseEntity<>(savedEnquete, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
+            System.out.println(e);
             // Example of handling validation errors from the service
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // Or return an error object
         } catch (Exception e) {
             // Generic error handling
-            // Log the exception e.g., log.error("Error saving enquete", e);
+            System.out.println(e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @GetMapping // Handles HTTP GET requests to /api/v1/enquetes
+    public ResponseEntity<List<Enquete>> getAllEnquetes() {
+        List<Enquete> enquetes = enqueteService.getAllEnquetes();
+        return new ResponseEntity<>(enquetes, HttpStatus.OK);
+    }
+    
     // --- Optional: Add endpoints for other operations ---
     /*
     @GetMapping("/{id}") // Handles HTTP GET requests to /api/v1/enquetes/{id}
@@ -39,11 +47,7 @@ public class EnqueteController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND)); // Not found: 404 Not Found
     }
 
-    @GetMapping // Handles HTTP GET requests to /api/v1/enquetes
-    public ResponseEntity<List<Enquete>> getAllEnquetes() {
-        List<Enquete> enquetes = enqueteService.getAllEnquetes();
-        return new ResponseEntity<>(enquetes, HttpStatus.OK);
-    }
+    
 
     @DeleteMapping("/{id}") // Handles HTTP DELETE requests to /api/v1/enquetes/{id}
     public ResponseEntity<Void> deleteEnquete(@PathVariable Long id) {

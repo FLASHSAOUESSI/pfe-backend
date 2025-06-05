@@ -1,0 +1,63 @@
+<div class="contact-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Contactez-nous</mat-card-title>
+      <mat-card-subtitle>Nous vous répondrons dans les plus brefs délais</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" class="contact-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="name" placeholder="Votre nom">
+          <mat-error *ngIf="nameControl?.errors?.['required']">
+            Le nom est requis
+          </mat-error>
+          <mat-error *ngIf="nameControl?.errors?.['minlength']">
+            Le nom doit contenir au moins 2 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" placeholder="votre@email.com" type="email">
+          <mat-error *ngIf="emailControl?.errors?.['required']">
+            L'email est requis
+          </mat-error>
+          <mat-error *ngIf="emailControl?.errors?.['email']">
+            Veuillez entrer une adresse email valide
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sujet</mat-label>
+          <input matInput formControlName="subject" placeholder="Sujet de votre message">
+          <mat-error *ngIf="subjectControl?.errors?.['required']">
+            Le sujet est requis
+          </mat-error>
+          <mat-error *ngIf="subjectControl?.errors?.['minlength']">
+            Le sujet doit contenir au moins 3 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Message</mat-label>
+          <textarea matInput formControlName="message" placeholder="Votre message" rows="6"></textarea>
+          <mat-error *ngIf="messageControl?.errors?.['required']">
+            Le message est requis
+          </mat-error>
+          <mat-error *ngIf="messageControl?.errors?.['minlength']">
+            Le message doit contenir au moins 10 caractères
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!contactForm.valid || isSubmitting">
+            <mat-icon>send</mat-icon>
+            Envoyer
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div> 

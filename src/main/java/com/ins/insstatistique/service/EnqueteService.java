@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor; // Lombok for constructor injection
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // Good practice for service methods modifying data
 
+import java.util.List;
+
 
 @Service // Marks this as a Spring service component
 @RequiredArgsConstructor // Lombok: generates constructor with required (final) fields
@@ -25,7 +27,10 @@ public class EnqueteService {
 
         return enqueteRepository.save(enquete);
     }
-
+    @Transactional(readOnly = true)
+    public List<Enquete> getAllEnquetes() {
+        return enqueteRepository.findAll();
+    }
     // --- Implement optional methods if you added them to the interface ---
     /*
     @Override
@@ -34,11 +39,7 @@ public class EnqueteService {
         return enqueteRepository.findById(id);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Enquete> getAllEnquetes() {
-        return enqueteRepository.findAll();
-    }
+
 
     @Override
     @Transactional

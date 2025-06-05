@@ -37,4 +37,10 @@ public class EmailTemplateService {
         context.setVariable("token", emailToken.getToken());
         return templateEngine.process("emails/set-password", context);
     }
+
+    public String getNewEnqueteTemplate(String appUrl) {
+        Context context = new Context();
+        context.setVariable("appUrl", appUrl);
+        return templateEngine.process("emails/new-enquete", context);
+    }
 }

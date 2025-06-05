@@ -1,0 +1,44 @@
+.message-details {
+  margin-bottom: 1.5rem;
+
+  .detail-row {
+    margin-bottom: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+
+    strong {
+      min-width: 80px;
+    }
+  }
+
+  .message-content {
+    margin-top: 1rem;
+
+    strong {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      background-color: #f5f5f5;
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-content {
+  min-width: 400px;
+  max-height: 80vh;
+}
+
+mat-dialog-actions {
+  padding: 1rem;
+  gap: 1rem;
+} 

@@ -81,5 +81,8 @@ public class Enquete {
 
     @Column(name = "taux_utilisation_capacite")
     private Integer tauxUtilisationCapacite; // Mapped from number
-    
+
+    @ManyToOne
+    @JoinColumn(name = "type_enquete_id", nullable = false)
+    private TypeEnquete typeEnquete;
 }
