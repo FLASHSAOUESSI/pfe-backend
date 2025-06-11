@@ -2,6 +2,7 @@ package com.ins.insstatistique.controller;
 
 import java.util.List;
 
+import com.ins.insstatistique.dto.EnqueteResponseRecord;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,7 +74,7 @@ public class UserController {
 
     // Endpoints pour la gestion des enquêtes
     @GetMapping("/enquetes")
-    public ResponseEntity<List<Enquete>> getAllEnquetes() {
+    public ResponseEntity<List<EnqueteResponseRecord>> getAllEnquetes() {
         return ResponseEntity.ok(userService.getAllEnquetes());
     }
 
