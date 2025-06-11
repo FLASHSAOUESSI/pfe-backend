@@ -1,6 +1,7 @@
 package com.ins.insstatistique.controller;
 
-import com.ins.insstatistique.dto.EnqueteRecord;
+import com.ins.insstatistique.dto.CreateEnqueteRecord;
+import com.ins.insstatistique.dto.EnqueteResponseRecord;
 import com.ins.insstatistique.service.EnqueteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,9 +17,9 @@ public class EnqueteController {
     private final EnqueteService enqueteService; // Inject the service
 
     @PostMapping // Handles HTTP POST requests to /api/v1/enquetes
-    public ResponseEntity<EnqueteRecord> createEnquete(@RequestBody EnqueteRecord enqueteRecord) {
+    public ResponseEntity<EnqueteResponseRecord> createEnquete(@RequestBody CreateEnqueteRecord createEnqueteRecord) {
         try {
-            EnqueteRecord savedEnquete = enqueteService.saveEnquete(enqueteRecord);
+            EnqueteResponseRecord savedEnquete = enqueteService.saveEnquete(createEnqueteRecord);
             // Return the saved entity and HTTP status 201 (Created)
             return new ResponseEntity<>(savedEnquete, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -33,8 +34,8 @@ public class EnqueteController {
     }
 
     @GetMapping // Handles HTTP GET requests to /api/v1/enquetes
-    public ResponseEntity<List<EnqueteRecord>> getAllEnquetes() {
-        List<EnqueteRecord> enquetes = enqueteService.getAllEnquetes();
+    public ResponseEntity<List<EnqueteResponseRecord>> getAllEnquetes() {
+        List<EnqueteResponseRecord> enquetes = enqueteService.getAllEnquetes();
         return new ResponseEntity<>(enquetes, HttpStatus.OK);
     }
     

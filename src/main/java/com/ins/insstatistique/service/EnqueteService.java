@@ -1,7 +1,8 @@
 package com.ins.insstatistique.service;
 
 
-import com.ins.insstatistique.dto.EnqueteRecord;
+import com.ins.insstatistique.dto.CreateEnqueteRecord;
+import com.ins.insstatistique.dto.EnqueteResponseRecord;
 import com.ins.insstatistique.dto.EnterpriseSimpleRecord;
 import com.ins.insstatistique.entity.Enquete;
 import com.ins.insstatistique.entity.Entreprise;
@@ -25,8 +26,8 @@ public class EnqueteService {
     private final UserRepository userRepository;
 
     @Transactional
-    public EnqueteRecord saveEnquete(EnqueteRecord enqueteRecord) {
-        if (enqueteRecord.identifiantStat() == null || enqueteRecord.identifiantStat().isEmpty()) {
+    public EnqueteResponseRecord saveEnquete(CreateEnqueteRecord createEnqueteRecord) {
+        if (createEnqueteRecord.identifiantStat() == null || createEnqueteRecord.identifiantStat().isEmpty()) {
             throw new IllegalArgumentException("Identifiant Stat cannot be empty");
         }
 
@@ -44,25 +45,25 @@ public class EnqueteService {
         }
 
         // Convert record to entity and set the enterprise
-        Enquete enquete = mapToEntity(enqueteRecord);
+        Enquete enquete = mapToEntity(createEnqueteRecord);
         enquete.setEntreprise(enterprise);
 
         // Save the entity
         Enquete savedEnquete = enqueteRepository.save(enquete);
 
-        // Convert back to record with enterprise details
-        return mapToRecord(savedEnquete);
+        // Convert back to response record with enterprise details
+        return mapToResponseRecord(savedEnquete);
     }
 
     @Transactional(readOnly = true)
-    public List<EnqueteRecord> getAllEnquetes() {
+    public List<EnqueteResponseRecord> getAllEnquetes() {
         return enqueteRepository.findAll().stream()
-                .map(this::mapToRecord)
+                .map(this::mapToResponseRecord)
                 .collect(Collectors.toList());
     }
 
-    // Helper method to convert Enquete entity to EnqueteRecord
-    private EnqueteRecord mapToRecord(Enquete enquete) {
+    // Helper method to convert Enquete entity to EnqueteResponseRecord
+    private EnqueteResponseRecord mapToResponseRecord(Enquete enquete) {
         EnterpriseSimpleRecord enterpriseRecord = null;
         if (enquete.getEntreprise() != null) {
             enterpriseRecord = new EnterpriseSimpleRecord(
@@ -71,7 +72,7 @@ public class EnqueteService {
             );
         }
 
-        return new EnqueteRecord(
+        return new EnqueteResponseRecord(
                 enquete.getId(),
                 enquete.getIdentifiantStat(),
                 enquete.getNomSociale(),
@@ -101,10 +102,9 @@ public class EnqueteService {
         );
     }
 
-    // Helper method to convert EnqueteRecord to Enquete entity
-    private Enquete mapToEntity(EnqueteRecord record) {
+    // Helper method to convert CreateEnqueteRecord to Enquete entity
+    private Enquete mapToEntity(CreateEnqueteRecord record) {
         Enquete enquete = new Enquete();
-        enquete.setId(record.id());
         enquete.setIdentifiantStat(record.identifiantStat());
         enquete.setNomSociale(record.nomSociale());
         enquete.setAdresse(record.adresse());
