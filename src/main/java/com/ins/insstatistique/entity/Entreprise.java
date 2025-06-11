@@ -1,4 +1,3 @@
-// Entreprise.java
 package com.ins.insstatistique.entity;
 
 import java.util.List;
@@ -54,4 +53,12 @@ public class Entreprise   {
     @JoinColumn(name = "governorate_id")
     @JsonManagedReference
     private Governorate governorate;
+
+    @OneToMany(
+            mappedBy = "entreprise",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference("entreprise-enquetes")
+    private List<Enquete> enquetes;
 }

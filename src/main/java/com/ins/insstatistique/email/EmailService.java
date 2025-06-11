@@ -36,6 +36,18 @@ public class EmailService {
         String htmlContent = emailTemplateService.getPasswordResetTemplate(resetLink);
         sendHtmlEmail(to, "Réinitialisation de mot de passe - INS", htmlContent);
     }
+
+    public void sendPartialEnqueteReminderEmail(String to, String companyName) throws MessagingException {
+        String htmlContent = emailTemplateService.getPartialEnqueteReminderTemplate(companyName);
+        sendHtmlEmail(to, "Rappel : Finalisez votre enquête statistique", htmlContent);
+    }
+
+    public void sendInitialEnqueteReminderEmail(String to, String companyName) throws MessagingException {
+        String htmlContent = emailTemplateService.getInitialEnqueteReminderTemplate(companyName);
+        sendHtmlEmail(to, "Invitation : Participez à l'enquête statistique", htmlContent);
+    }
+
+
     public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");

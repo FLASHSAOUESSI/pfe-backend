@@ -1,22 +1,23 @@
 package com.ins.insstatistique.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "enquetes") // Optional: specify table name
-@Data // Lombok annotation for boilerplate code
-@NoArgsConstructor // JPA requires a no-arg constructor
-@AllArgsConstructor // Optional: useful constructor
+@Table(name = "enquetes")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Enquete {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment ID
-    private Long id; // Primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "identifiant_stat") // Map to snake_case if desired
+    @Column(name = "identifiant_stat")
     private String identifiantStat;
 
     @Column(name = "nom_sociale")
@@ -35,22 +36,22 @@ public class Enquete {
     @Column(name = "branche_activite")
     private String brancheActivite;
 
-    private Boolean exportatrice; // Mapped from "true"/"false"
+    private Boolean exportatrice;
 
     @Column(name = "variaison_saisoniere")
-    private Boolean variaisonSaisoniere; // Mapped from "true"/"false"
+    private Boolean variaisonSaisoniere;
 
     @Column(name = "situation_1er_trimestre")
-    private String situation1erTrimestre; // e.g., "bonne", "moyenne"
+    private String situation1erTrimestre;
 
     @Column(name = "situation_2eme_trimestre")
     private String situation2emeTrimestre;
 
     @Column(name = "situation_future")
-    private String situationFuture; // e.g., "meme"
+    private String situationFuture;
 
     @Column(name = "effectifs_1er_trimestre")
-    private String effectifs1erTrimestre; // e.g., "same", "up", "down"
+    private String effectifs1erTrimestre;
 
     @Column(name = "effectifs_2eme_trimestre")
     private String effectifs2emeTrimestre;
@@ -59,7 +60,7 @@ public class Enquete {
     private String effectifsFutur;
 
     @Column(name = "prix_matieres_1er_trimestre")
-    private String prixMatieres1erTrimestre; // e.g., "up", "same"
+    private String prixMatieres1erTrimestre;
 
     @Column(name = "prix_matieres_2eme_trimestre")
     private String prixMatieres2emeTrimestre;
@@ -68,7 +69,7 @@ public class Enquete {
     private String prixMatieresFutur;
 
     @Column(name = "avoir_difficultes")
-    private Boolean avoirDifficultes; // Mapped from "true"/"false"
+    private Boolean avoirDifficultes;
 
     @Column(name = "diff_approvisionnement")
     private String diffApprovisionnement;
@@ -77,12 +78,19 @@ public class Enquete {
     private String diffAutre;
 
     @Column(name = "pleine_capacite")
-    private Boolean pleineCapacite; // Mapped from "true"/"false"
+    private Boolean pleineCapacite;
 
     @Column(name = "taux_utilisation_capacite")
-    private Integer tauxUtilisationCapacite; // Mapped from number
+    private Integer tauxUtilisationCapacite;
 
     @ManyToOne
     @JoinColumn(name = "type_enquete_id", nullable = false)
     private TypeEnquete typeEnquete;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entreprise_id", nullable = false)
+    @JsonBackReference("entreprise-enquetes")
+    private Entreprise entreprise;
+
+
 }

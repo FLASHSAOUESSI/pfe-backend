@@ -18,6 +18,18 @@ public class EmailTemplateService {
         return templateEngine.process("emails/verification-code", context);
     }
 
+    public String getInitialEnqueteReminderTemplate(String companyName) {
+        Context context = new Context();
+        context.setVariable("companyName", companyName);
+        return templateEngine.process("emails/enquete-initial-reminder", context);
+    }
+
+    public String getPartialEnqueteReminderTemplate(String companyName) {
+        Context context = new Context();
+        context.setVariable("companyName", companyName);
+        return templateEngine.process("emails/enquete-partial-reminder", context);
+    }
+
     // Ajoutez d'autres méthodes pour différents templates d'emails
     public String getWelcomeTemplate(String userName) {
         Context context = new Context();

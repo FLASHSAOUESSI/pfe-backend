@@ -47,7 +47,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
-    private final AuthenticationManager authenticationManager;    private final EmailService emailService;
+    private final AuthenticationManager authenticationManager;
+    private final EmailService emailService;
     private final TokenRepository tokenRepository;
     private final GovernorateRepository governorateRepository;
 
@@ -62,7 +63,9 @@ public class AuthService {
         String code = generateVerificationCode();
         verificationCodes.put(request.companyEmail(), code);
         this.emailService.sendVerificationCode(request.investigatorEmail(),code);
-    }    public boolean register(RegisterDTO registerDTO) throws InvalidVerificationCodeException, MessagingException {
+    }
+
+    public boolean register(RegisterDTO registerDTO) throws InvalidVerificationCodeException, MessagingException {
         validateVerificationCode(registerDTO.getCompanyEmail(), registerDTO.getVerificationCode());
 
         // Get governorate if specified
@@ -100,7 +103,6 @@ public class AuthService {
 
         this.emailService.sendSetPasswordEmail(createdUser.getEmail(), createdUser.getUsername(), createdToken);
 
-        //String token = tokenProvider.generateToken(investigateur.getEmail());
         return true;
     }    public JwtResponse login(LoginDTO loginDTO) {
         System.out.println("login");
