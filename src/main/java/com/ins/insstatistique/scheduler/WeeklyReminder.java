@@ -23,8 +23,8 @@ public class WeeklyReminder {
     private final EntrepriseRepository entrepriseRepository;
     private final EmailService emailService;
 
-//    @Scheduled(cron = "0 0 9 * * MON") // Every Monday at 9 AM
-    @Scheduled(cron = "0 * * * * *")
+   @Scheduled(cron = "0 0 9 * * MON") // Every Monday at 9 AM
+  //  @Scheduled(cron = "0 * * * * *")
     public void sendWeeklyReminders() {
         log.info("Starting weekly reminder task.");
 

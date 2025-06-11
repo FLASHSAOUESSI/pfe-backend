@@ -6,8 +6,10 @@ import com.ins.insstatistique.dto.EnqueteResponseRecord;
 import com.ins.insstatistique.dto.EnterpriseSimpleRecord;
 import com.ins.insstatistique.entity.Enquete;
 import com.ins.insstatistique.entity.Entreprise;
+import com.ins.insstatistique.entity.TypeEnquete;
 import com.ins.insstatistique.entity.User;
 import com.ins.insstatistique.repository.EnqueteRepository;
+import com.ins.insstatistique.repository.TypeEnqueteRepository;
 import com.ins.insstatistique.repository.UserRepository;
 import com.ins.insstatistique.shared.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class EnqueteService {
 
     private final EnqueteRepository enqueteRepository;
     private final UserRepository userRepository;
+    private final TypeEnqueteRepository typeEnqueteRepository;
 
     @Transactional
     public EnqueteResponseRecord saveEnquete(CreateEnqueteRecord createEnqueteRecord) {
@@ -47,6 +50,11 @@ public class EnqueteService {
         // Convert record to entity and set the enterprise
         Enquete enquete = mapToEntity(createEnqueteRecord);
         enquete.setEntreprise(enterprise);
+
+        TypeEnquete typeEnquete = typeEnqueteRepository.findById(createEnqueteRecord.typeEnquete().id()).orElse(null);
+        if( typeEnquete != null ) {
+            enquete.setTypeEnquete(typeEnquete);
+        }
 
         // Save the entity
         Enquete savedEnquete = enqueteRepository.save(enquete);

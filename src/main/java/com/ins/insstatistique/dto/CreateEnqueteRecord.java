@@ -27,6 +27,9 @@ public record CreateEnqueteRecord(
     String diffApprovisionnement,
     String diffAutre,
     Boolean pleineCapacite,
-    Integer tauxUtilisationCapacite
+    Integer tauxUtilisationCapacite,
+    TypeEnqueteDto typeEnquete
 ) {
+
+    public record TypeEnqueteDto(Long id){}
 }
