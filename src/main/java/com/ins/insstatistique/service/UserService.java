@@ -100,12 +100,53 @@ public class UserService {
         enqueteRepository.deleteById(id);
     }
 
+    public UserWithEnterpriseDTO getUserWithEnterpriseByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return mapToUserWithEnterpriseDTO(user);
+    }
+
+    private UserWithEnterpriseDTO mapToUserWithEnterpriseDTO(User user) {
+        EnterpriseSimpleRecord enterpriseRecord = null;
+        if (user.getEntreprise() != null) {
+            enterpriseRecord = new EnterpriseSimpleRecord(
+                    user.getEntreprise().getId(),
+                    user.getEntreprise().getName(),
+                    user.getEntreprise().getAddress(),
+                    user.getEntreprise().getEmail(),
+                    user.getEntreprise().getFax(),
+                    user.getEntreprise().getStatus(),
+                    user.getEntreprise().getGovernorate() != null ? user.getEntreprise().getGovernorate().getId() : null,
+                    user.getEntreprise().getGovernorate() != null ? user.getEntreprise().getGovernorate().getName() : null,
+                    user.getEntreprise().getResponsables() != null ? user.getEntreprise().getResponsables().size() : 0
+            );
+        }
+
+        return new UserWithEnterpriseDTO(
+                user.getId(),
+                user.getNom(),
+                user.getEmail(),
+                user.getPhone(),
+                user.getRole(),
+                user.isEnabled(),
+                enterpriseRecord
+        );
+    }
+
     private EnqueteResponseRecord mapToResponseRecord(Enquete enquete) {
         EnterpriseSimpleRecord enterpriseRecord = null;
         if (enquete.getEntreprise() != null) {
             enterpriseRecord = new EnterpriseSimpleRecord(
                     enquete.getEntreprise().getId(),
-                    enquete.getEntreprise().getName()
+                    enquete.getEntreprise().getName(),
+                    enquete.getEntreprise().getAddress(),
+                    enquete.getEntreprise().getEmail(),
+                    enquete.getEntreprise().getFax(),
+                    enquete.getEntreprise().getStatus(),
+                    enquete.getEntreprise().getGovernorate() != null ? enquete.getEntreprise().getGovernorate().getId() : null,
+                    enquete.getEntreprise().getGovernorate() != null ? enquete.getEntreprise().getGovernorate().getName() : null,
+                    enquete.getEntreprise().getResponsables() != null ? enquete.getEntreprise().getResponsables().size() : 0
+
             );
         }
 

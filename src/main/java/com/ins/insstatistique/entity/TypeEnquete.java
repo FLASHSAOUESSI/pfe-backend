@@ -26,4 +26,7 @@ public class TypeEnquete {
 
     @Column(nullable = false)
     private String statut; // "able" ou "enable"
-} 
+
+    @Version
+    private Integer version = 0;
+}

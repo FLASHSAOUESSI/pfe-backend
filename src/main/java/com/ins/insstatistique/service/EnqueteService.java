@@ -76,7 +76,15 @@ public class EnqueteService {
         if (enquete.getEntreprise() != null) {
             enterpriseRecord = new EnterpriseSimpleRecord(
                     enquete.getEntreprise().getId(),
-                    enquete.getEntreprise().getName()
+                    enquete.getEntreprise().getName(),
+                    enquete.getEntreprise().getAddress(),
+                    enquete.getEntreprise().getEmail(),
+                    enquete.getEntreprise().getFax(),
+                    enquete.getEntreprise().getStatus(),
+                    enquete.getEntreprise().getGovernorate() != null ? enquete.getEntreprise().getGovernorate().getId() : null,
+                    enquete.getEntreprise().getGovernorate() != null ? enquete.getEntreprise().getGovernorate().getName() : null,
+                    enquete.getEntreprise().getResponsables() != null ? enquete.getEntreprise().getResponsables().size() : 0
+
             );
         }
 

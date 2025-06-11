@@ -3,7 +3,9 @@ package com.ins.insstatistique.controller;
 import java.util.List;
 
 import com.ins.insstatistique.dto.EnqueteResponseRecord;
+import com.ins.insstatistique.dto.UserWithEnterpriseDTO;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +29,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/me")
+    public ResponseEntity<UserWithEnterpriseDTO> getCurrentInvestigateur() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(userService.getUserWithEnterpriseByEmail(email));
+    }
+
+    @GetMapping("/me/with-enterprise")
+    public ResponseEntity<UserWithEnterpriseDTO> getCurrentUserWithEnterprise() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return ResponseEntity.ok(userService.getUserWithEnterpriseByEmail(email));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody UserLoginRequest request) {
